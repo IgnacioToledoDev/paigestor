@@ -1,6 +1,6 @@
-# 🕷️ parquet-scraper
+# 🕷️ paigestor
 
-**parquet-scraper** es una herramienta de línea de comandos (CLI) que permite scrapear páginas web en busca de archivos `.parquet`, descargarlos localmente y subirlos opcionalmente a un bucket de Google Cloud Storage (GCS).
+**paigestor** es una herramienta de línea de comandos (CLI) que permite scrapear páginas web en busca de archivos `.parquet`, descargarlos localmente y subirlos opcionalmente a un bucket de Google Cloud Storage (GCS).
 
 ---
 
@@ -19,6 +19,6 @@
 ### 📦 Instalar localmente (modo desarrollo)
 
 ```bash
-git clone https://github.com/tu-usuario/parquet-scraper.git
+git clone https://github.com/IgnacioToledoDev/paigestor.git
 cd parquet-scraper
 pip install -e .
