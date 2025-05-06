@@ -1,17 +1,26 @@
-# services/gcs_uploader.py
 import os
+import requests
 from google.cloud import storage
-from paigestor.interfaces.uploader_interface import UploaderInterface
+from urllib.parse import urlparse
 
-class GcsUploader(UploaderInterface):
+class GcsUploader:
     def __init__(self, bucket_name: str):
         self.client = storage.Client()
         self.bucket = self.client.bucket(bucket_name)
 
-    def upload_directory(self, path: str) -> None:
-        for file in os.listdir(path):
-            if file.endswith(".parquet"):
-                blob = self.bucket.blob(file)
-                full_path = os.path.join(path, file)
-                print(f"Subiendo {file} a GCS...")
-                blob.upload_from_filename(full_path)
+    def upload_from_url(self, url: str, destination_blob_name: str = None) -> None:
+        if not destination_blob_name:
+            destination_blob_name = os.path.basename(urlparse(url).path)
+
+        if self.bucket.blob(destination_blob_name).exists(self.client):
+            print(f"⚠️ Ya existe en GCS, se omite: {destination_blob_name}")
+            return
+
+        print(f"☁️ Subiendo: {destination_blob_name} desde {url}")
+        response = requests.get(url, stream=True)
+        response.raise_for_status()
+
+        blob = self.bucket.blob(destination_blob_name)
+        blob.upload_from_file(response.raw, rewind=True)
+
+        print(f"✅ Subido: gs://{self.bucket.name}/{destination_blob_name}")
