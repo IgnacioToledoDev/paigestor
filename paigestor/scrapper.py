@@ -27,7 +27,7 @@ class Scrapper(ScrapperInterface):
                 year = int(match.group(1))
                 month = int(match.group(2))
                 file_date = datetime(year, month, 1)
-                if file_date >= datetime(self.from_year, 1, 1) and file_date <= self.today:
+                if datetime(self.from_year, 1, 1) <= file_date <= self.today:
                     full_url = urljoin(self.base_url, href)
                     if href.endswith(".parquet"):
                         valid_urls.append(full_url)
