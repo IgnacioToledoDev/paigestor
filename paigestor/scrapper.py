@@ -40,6 +40,11 @@ class Scrapper(ScrapperInterface):
 
         for url in urls:
             filename = os.path.join(output_dir, os.path.basename(urlparse(url).path))
+
+            if os.path.exists(filename):
+                print(f"⚠️ Ya existe localmente, se omite: {filename}")
+                continue
+
             print(f"\n📥 Descargando: {url}")
 
             try:
@@ -48,12 +53,12 @@ class Scrapper(ScrapperInterface):
                     total_size = int(response.headers.get('content-length', 0))
 
                     with open(filename, "wb") as file, tqdm(
-                        total=total_size,
-                        unit="B",
-                        unit_scale=True,
-                        unit_divisor=1024,
-                        desc=os.path.basename(filename),
-                        ncols=80,
+                            total=total_size,
+                            unit="B",
+                            unit_scale=True,
+                            unit_divisor=1024,
+                            desc=os.path.basename(filename),
+                            ncols=80,
                     ) as bar:
                         for chunk in response.iter_content(chunk_size=8192):
                             if chunk:
@@ -72,4 +77,4 @@ class Scrapper(ScrapperInterface):
                 print(f"\n☁️ Subiendo directamente: {url}")
                 uploader.upload_from_url(url)
             except Exception as e:
-                print(f"❌ Error al subir {url}: {e}")
+                print(f"❌ Error al subir archivo: {e}")
