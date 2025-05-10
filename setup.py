@@ -10,6 +10,7 @@ setup(
         "requests",
         "beautifulsoup4",
         "google-cloud-storage",
+        "tqdm"
     ],
     entry_points={
         "console_scripts": [
@@ -18,5 +19,5 @@ setup(
     },
     author="@IgnacioToledoDev",
     description="Herramienta CLI para scrapear archivos .parquet y subirlos a GCS",
-    python_requires=">=3.8",
+    python_requires=">=3.12",
 )
