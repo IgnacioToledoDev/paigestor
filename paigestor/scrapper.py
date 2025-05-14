@@ -9,11 +9,12 @@ from typing import List
 from paigestor.interfaces.scrapper_interface import ScrapperInterface
 
 class Scrapper(ScrapperInterface):
-    def __init__(self, base_url: str, from_year: int = 2022):
+    def __init__(self, base_url: str, enabled_debug_mode: bool, from_year: int = 2022):
         self.base_url = base_url
         self.from_year = from_year
         self.today = datetime.today()
         self.current_year = datetime.today().year
+        self.enabled_debug_mode = enabled_debug_mode
 
     def get_file_urls(self) -> List[str]:
         response = requests.get(self.base_url)
@@ -26,17 +27,17 @@ class Scrapper(ScrapperInterface):
             full_url = urljoin(self.base_url, raw_href)
             parsed = urlparse(full_url)
 
-            if not parsed.path.endswith(".parquet"):
+            if not parsed.path.endswith(".parquet") and self.enabled_debug_mode:
                 print(f"⛔️ Ignorado (no parquet): {full_url}")
                 continue
 
-            if not re.search(r"(green|yellow)", parsed.path, re.IGNORECASE):
+            if not re.search(r"(green|yellow)", parsed.path, re.IGNORECASE) and self.enabled_debug_mode:
                 print(f"⛔️ Ignorado (no green/yellow): {full_url}")
                 continue
 
             # Extrae fecha YYYY-MM o YYYY_MM
             match = re.search(r"(\d{4})[-_](\d{2})", parsed.path)
-            if not match:
+            if not match and self.enabled_debug_mode:
                 print(f"⛔️ Ignorado (sin fecha): {full_url}")
                 continue
 

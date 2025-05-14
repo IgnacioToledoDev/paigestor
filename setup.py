@@ -10,7 +10,9 @@ setup(
         "requests",
         "beautifulsoup4",
         "google-cloud-storage",
-        "tqdm"
+        "tqdm",
+        "apache-beam[gcp]",
+        "protobuf",
     ],
     entry_points={
         "console_scripts": [
@@ -18,6 +20,6 @@ setup(
         ],
     },
     author="@IgnacioToledoDev",
-    description="Herramienta CLI para scrapear archivos .parquet y subirlos a GCS",
+    description="Herramienta CLI para scrapear archivos .parquet desde NYC TLC y subirlos a Google Cloud Storage usando Apache Beam o ejecución directa.",
     python_requires=">=3.12",
 )
