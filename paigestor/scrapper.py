@@ -18,21 +18,37 @@ class Scrapper(ScrapperInterface):
     def get_file_urls(self) -> List[str]:
         response = requests.get(self.base_url)
         soup = BeautifulSoup(response.text, "html.parser")
-        all_links = [a["href"] for a in soup.find_all("a", href=True)]
-        
-        valid_urls = []
-        for href in all_links:
-            match = re.search(r"(\d{4})-(\d{2})", href)
-            if match:
-                year = int(match.group(1))
-                month = int(match.group(2))
-                file_date = datetime(year, month, 1)
-                if datetime(self.from_year, 1, 1) <= file_date <= self.today:
-                    full_url = urljoin(self.base_url, href)
-                    if href.endswith(".parquet"):
-                        valid_urls.append(full_url)
 
-        print(f"✅ Encontrados {len(valid_urls)} archivos parquet desde {self.from_year} hasta hoy.")
+        valid_urls = []
+
+        for a in soup.find_all("a", href=True):
+            raw_href = a["href"].strip()
+            full_url = urljoin(self.base_url, raw_href)
+            parsed = urlparse(full_url)
+
+            if not parsed.path.endswith(".parquet"):
+                print(f"⛔️ Ignorado (no parquet): {full_url}")
+                continue
+
+            if not re.search(r"(green|yellow)", parsed.path, re.IGNORECASE):
+                print(f"⛔️ Ignorado (no green/yellow): {full_url}")
+                continue
+
+            # Extrae fecha YYYY-MM o YYYY_MM
+            match = re.search(r"(\d{4})[-_](\d{2})", parsed.path)
+            if not match:
+                print(f"⛔️ Ignorado (sin fecha): {full_url}")
+                continue
+
+            year, month = int(match.group(1)), int(match.group(2))
+            file_date = datetime(year, month, 1)
+
+            if not (datetime(self.from_year, 1, 1) <= file_date <= datetime(2024, 12, 31)):
+                continue
+
+            valid_urls.append(full_url)
+
+        print(f"\n✅ Total archivos válidos encontrados: {len(valid_urls)}")
         return valid_urls
 
     def download_files(self, urls: List[str], output_dir: str) -> None:
