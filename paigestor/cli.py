@@ -20,11 +20,11 @@ Ejemplos de uso:
 @click.option('--bucket', required=False, help='Bucket GCS (opcional si usas --only-scraper)')
 @click.option('--temp-dir', default='downloads', help='Directorio temporal para guardar archivos')
 @click.option('--only-scraper', is_flag=True, help='Ejecuta solo el scraper, sin subir a GCS')
-@click.option('--debug', is_flag=True, help='Activa modo debug')
+@click.option('--debug', is_flag=True, required=False, help='Activa modo debug')
 @click.option('--use-beam', is_flag=True, help='Usa Apache Beam para subir directamente a GCS')
-def main(bucket, temp_dir, only_scraper, use_beam, enabled_debug_mode=False):
+def main(bucket, temp_dir, only_scraper, use_beam, debug=False):
     DEFAULT_URL = "https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page"
-    scraper = Scrapper(DEFAULT_URL, enabled_debug_mode)
+    scraper = Scrapper(DEFAULT_URL, debug)
 
     if only_scraper:
         print("🕷️ Ejecutando solo el scraper...")

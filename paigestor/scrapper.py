@@ -27,26 +27,40 @@ class Scrapper(ScrapperInterface):
             full_url = urljoin(self.base_url, raw_href)
             parsed = urlparse(full_url)
 
-            if not parsed.path.endswith(".parquet") and self.enabled_debug_mode:
-                print(f"⛔️ Ignorado (no parquet): {full_url}")
+            # Filtrar archivos que no sean .parquet
+            if not parsed.path.endswith(".parquet"):
+                if self.enabled_debug_mode:
+                    print(f"⛔️ Ignorado (no parquet): {full_url}")
                 continue
 
-            if not re.search(r"(green|yellow)", parsed.path, re.IGNORECASE) and self.enabled_debug_mode:
-                print(f"⛔️ Ignorado (no green/yellow): {full_url}")
+            # Filtrar por 'green' o 'yellow' en la URL
+            if not re.search(r"(green|yellow)", parsed.path, re.IGNORECASE):
+                if self.enabled_debug_mode:
+                    print(f"⛔️ Ignorado (no green/yellow): {full_url}")
                 continue
 
-            # Extrae fecha YYYY-MM o YYYY_MM
+            # Extraer la fecha del nombre del archivo
             match = re.search(r"(\d{4})[-_](\d{2})", parsed.path)
-            if not match and self.enabled_debug_mode:
-                print(f"⛔️ Ignorado (sin fecha): {full_url}")
+            if not match:
+                if self.enabled_debug_mode:
+                    print(f"⛔️ Ignorado (sin fecha): {full_url} | path: {parsed.path}")
                 continue
 
-            year, month = int(match.group(1)), int(match.group(2))
-            file_date = datetime(year, month, 1)
+            try:
+                year, month = int(match.group(1)), int(match.group(2))
+                file_date = datetime(year, month, 1)
+            except ValueError as e:
+                if self.enabled_debug_mode:
+                    print(f"⛔️ Fecha inválida en URL: {full_url} ({e})")
+                continue
 
+            # Verificar si está en el rango permitido
             if not (datetime(self.from_year, 1, 1) <= file_date <= datetime(2024, 12, 31)):
+                if self.enabled_debug_mode:
+                    print(f"⛔️ Fecha fuera de rango: {file_date.strftime('%Y-%m')} en {full_url}")
                 continue
 
+            # Si pasó todas las validaciones
             valid_urls.append(full_url)
 
         print(f"\n✅ Total archivos válidos encontrados: {len(valid_urls)}")
