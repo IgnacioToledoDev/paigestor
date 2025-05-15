@@ -46,10 +46,7 @@ A continuacion se detalla como usar este script para descargar los archivos parq
 ### Descargar archivos parquet a traves de comando
 ```bash
 # Ejemplo
-paigestor --url <url_donde_estan_archivos_parquet> --only-scraper
-
-# Caso de uso real
-paigestor --url https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page --only-scraper
+paigestor --only-scraper
 ```
 ### Resultado esperado
 
@@ -116,7 +113,7 @@ se debe quitar el check en **Choose how to control access to objects**
 Subir los archivos del bucket
 ```bash
 #comando utilizado
-paigestor --url https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page --bucket '<nombre_del_bucket>'
+paigestor --bucket '<nombre_del_bucket>'
 ```
 
 - Se deberia omitir la descarga de los archivos y deberia empezar la subida de los archivos
